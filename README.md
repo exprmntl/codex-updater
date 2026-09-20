@@ -1,6 +1,6 @@
 # Codex Updater
 
-<img src="assets/promo/social-card.png" alt="Codex Updater — Updates on your schedule. A nighttime laptop with the mint moon and update arrow." width="1200">
+<img src="assets/promo/social-card.png" alt="Codex Updater — Updates on your schedule. The mint crescent and update-arrow logo above a timeline highlighting 2–3 a.m." width="1200">
 
 Keep Codex up to date overnight, even when you leave it open for days.
 
