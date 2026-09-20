@@ -10,10 +10,10 @@ From the repository on macOS (Xcode Command Line Tools are required to build):
 
 ```bash
 zsh scripts/install-local.sh
-open "$HOME/Applications/Codex Update Helper.app"
+open "$HOME/Applications/Codex Updater.app"
 ```
 
-Enable **Codex Update Helper** once in **System Settings → Privacy & Security → Accessibility**. If it is not listed, use **+** and select the app in your home folder's Applications directory. The helper defers before requesting a quit until this permission is available. Rebuilding an ad-hoc signed helper may require re-enabling its permission.
+Enable **Codex Updater** once in **System Settings → Privacy & Security → Accessibility**. If it is not listed, use **+** and select the app in your home folder's Applications directory. The helper defers before requesting a quit until this permission is available. Rebuilding an ad-hoc signed helper may require re-enabling its permission.
 
 ### Verify background Accessibility permission
 
@@ -21,14 +21,16 @@ The settings window and a command launched from Codex can inherit Codex's own Ac
 
 Create a temporary, one-shot LaunchAgent with a unique label, `RunAtLoad` enabled, and these `ProgramArguments` (expand `~` to the actual home directory):
 
-1. `~/Applications/Codex Update Helper.app/Contents/MacOS/codex-update-helper-quit`
+1. `~/Applications/Codex Updater.app/Contents/MacOS/codex-update-helper-quit`
 2. `--check-accessibility`
 
 Give it separate stdout/stderr files, load it with `launchctl bootstrap "gui/$(id -u)" /path/to/probe.plist`, and inspect its output and exit status. `ready` with exit 0 means access works; `needs-accessibility` with exit 2 means the permission still needs attention. This check never quits Codex. Unload the temporary job and remove its temporary files afterward.
 
-If the toggle looks enabled but this check fails, remove the stale **Codex Update Helper** entry from Accessibility, add the currently installed app again using **+**, and enable it. Authenticate when macOS asks. Recheck from the background process. Avoid rebuilding after granting access: the changed ad-hoc signature can invalidate the grant again.
+If the toggle looks enabled but this check fails, remove the stale **Codex Updater** entry from Accessibility, add the currently installed app again using **+**, and enable it. Authenticate when macOS asks. Recheck from the background process. Avoid rebuilding after granting access: the changed ad-hoc signature can invalidate the grant again.
 
 ### Existing installations and scheduling
+
+Codex Updater was previously named Codex Update Helper. The installer puts the renamed app in `~/Applications/Codex Updater.app` and moves the old app into the installer backup after the replacement service loads. Settings, logs, the LaunchAgent label, bundle identifier, update lock, and `CODEX_UPDATE_HELPER_*` environment overrides retain their existing names for compatibility. The old `codex-update-helper` command remains an alias for `codex-updater` in the repository and app bundle. Until you reinstall, the new command can still use the older installed app.
 
 The local installer backs up and replaces the existing `dev.exprmntl.codex-update-helper` LaunchAgent, including an older Homebrew installation. It installs a self-contained app under `~/Applications`; no checkout is needed at runtime. Existing Homebrew files are preserved. Do not run `brew services restart codex-update-helper` afterward: that restores the older Homebrew service configuration. Use the local installer to reinstall this version.
 
@@ -38,7 +40,7 @@ Codex's own quit dialog distinguishes active local tasks and worktrees still sta
 
 ## Settings
 
-Open **Codex Update Helper** from your home folder's Applications directory, or run `./bin/codex-update-helper settings`. The settings window lets you change the schedule and restart behavior. Settings are stored in `~/Library/Application Support/Codex Update Helper/settings.plist` and survive reinstalls. The service reads them each minute; changes take effect on the next check without reinstalling or restarting the service.
+Open **Codex Updater** from your home folder's Applications directory, or run `./bin/codex-updater settings`. The settings window lets you change the schedule and restart behavior. Settings are stored in `~/Library/Application Support/Codex Update Helper/settings.plist` and survive reinstalls. The service reads them each minute; changes take effect on the next check without reinstalling or restarting the service.
 
 Use the native time pickers for start/end times, the searchable timezone dropdown, and the idle/retry menus. The idle menu disables automatically when you choose to restart during active work. **Restore defaults** fills in the default choices; **Save** applies them. **Cancel** leaves saved settings unchanged.
 
@@ -57,11 +59,11 @@ The **always** policy still uses a graceful quit and Sparkle's installer. It app
 Command-line equivalents:
 
 ```bash
-./bin/codex-update-helper config show
-./bin/codex-update-helper config set start-time 01:30 end-time 03:00 timezone America/New_York
-./bin/codex-update-helper config set restart-policy always
-./bin/codex-update-helper config set restart-policy idle-only idle-minutes 15 reopen true
-./bin/codex-update-helper config reset
+./bin/codex-updater config show
+./bin/codex-updater config set start-time 01:30 end-time 03:00 timezone America/New_York
+./bin/codex-updater config set restart-policy always
+./bin/codex-updater config set restart-policy idle-only idle-minutes 15 reopen true
+./bin/codex-updater config reset
 ```
 
 Multiple values are validated and saved together. An invalid setting leaves the existing file unchanged. Missing settings use the defaults above; a malformed settings file blocks automatic updates until it is fixed or reset. Saved settings are data, never executable shell code. Legacy environment overrides for timezone, start/end hours, and idle seconds take precedence when explicitly supplied.
@@ -69,17 +71,17 @@ Multiple values are validated and saved together. An invalid setting leaves the 
 ## Check it
 
 ```bash
-./bin/codex-update-helper status
-./bin/codex-update-helper doctor
-./bin/codex-update-helper run --dry-run
+./bin/codex-updater status
+./bin/codex-updater doctor
+./bin/codex-updater run --dry-run
 ```
 
-The installed command is also available at `~/Applications/Codex Update Helper.app/Contents/Resources/codex-update-helper`. An older `codex-update-helper` on your PATH may still refer to the Homebrew release.
+The installed command is also available at `~/Applications/Codex Updater.app/Contents/Resources/codex-updater`. An older `codex-update-helper` on your PATH may still refer to the Homebrew release.
 
 To install a waiting update immediately, bypassing the time window and keyboard/mouse idle guard:
 
 ```bash
-./bin/codex-update-helper run --force
+./bin/codex-updater run --force
 ```
 
 The configured restart policy, signature checks, bundle identity checks, graceful quitting, and timeouts still apply. `--force` only bypasses the schedule and keyboard/mouse idle guard; it does not change `idle-only` to `always` and never force-kills Codex.
@@ -104,7 +106,7 @@ launchctl bootout "gui/$(id -u)/dev.exprmntl.codex-update-helper"
 rm "$HOME/Library/LaunchAgents/dev.exprmntl.codex-update-helper.plist"
 ```
 
-Then remove `~/Applications/Codex Update Helper.app` in Finder. This does not remove Codex, its preferences, or an older Homebrew package. Installer backups are in `~/Library/Application Support/Codex Update Helper/backups/`.
+Then remove `~/Applications/Codex Updater.app` in Finder. This does not remove Codex, its preferences, or an older Homebrew package. Installer backups are in `~/Library/Application Support/Codex Update Helper/backups/`.
 
 ## Logs
 
@@ -127,7 +129,7 @@ The implementation depends on Codex's current Sparkle staging layout. If that im
 ## Development
 
 ```bash
-zsh -n bin/codex-update-helper
+zsh -n bin/codex-updater
 ./tests/test.sh
 # Optional: briefly displays test dialogs in a disposable fixture app.
 zsh tests/native-ui.sh

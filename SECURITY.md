@@ -2,7 +2,7 @@
 
 ## Trust model
 
-Codex Update Helper does not download, extract, copy, or replace application code. It delegates installation to the Sparkle framework bundled with Codex.
+Codex Updater does not download, extract, copy, or replace application code. It delegates installation to the Sparkle framework bundled with Codex.
 
 Before requesting a quit, it verifies both the installed application and staged update using:
 
@@ -20,4 +20,4 @@ The test-only native guard accepts a separate fixture bundle ID instead of Codex
 
 ## Reporting a vulnerability
 
-Please use GitHub's private vulnerability reporting for `exprmntl/codex-update-helper`. Do not open a public issue for an unpatched security problem.
+Please use GitHub's private vulnerability reporting for `exprmntl/codex-updater`. Do not open a public issue for an unpatched security problem.

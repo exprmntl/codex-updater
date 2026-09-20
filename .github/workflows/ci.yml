@@ -13,6 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Check zsh syntax
-        run: zsh -n bin/codex-update-helper
+        run: zsh -n bin/codex-updater
       - name: Run tests
         run: ./tests/test.sh

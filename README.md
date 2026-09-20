@@ -1,6 +1,6 @@
-# Codex Update Helper
+# Codex Updater
 
-<img src="assets/AppIcon.svg" alt="Codex Update Helper moon and update arrow icon" width="112">
+<img src="assets/AppIcon.svg" alt="Codex Updater moon and update arrow icon" width="112">
 
 Keep Codex up to date overnight, even when you leave it open for days.
 
@@ -9,7 +9,7 @@ Keep Codex up to date overnight, even when you leave it open for days.
 Copy this into your Codex agent on the Mac you want to set up:
 
 ```text
-Install and set up https://github.com/exprmntl/codex-update-helper on this Mac.
+Install and set up https://github.com/exprmntl/codex-updater on this Mac.
 Read the repository instructions and docs/reference.md, check prerequisites,
 and use scripts/install-local.sh. Preserve any existing settings; for a new
 installation, use the defaults: updates between 2–3 a.m. America/New_York,
@@ -32,7 +32,7 @@ By default, it waits while local tasks are active. Having scheduled tasks enable
 
 ## Settings
 
-Open **Codex Update Helper** in your home folder’s **Applications** directory. Use the time pickers, timezone dropdown, and other controls, then **Save**. Changes apply automatically and survive reinstalls; **Restore defaults** brings back these choices.
+Open **Codex Updater** in your home folder’s **Applications** directory. Use the time pickers, timezone dropdown, and other controls, then **Save**. Changes apply automatically and survive reinstalls; **Restore defaults** brings back these choices.
 
 | Setting | Default | What you can change |
 | --- | --- | --- |

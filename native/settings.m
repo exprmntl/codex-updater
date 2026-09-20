@@ -258,7 +258,7 @@ int showSettings(void) {
     NSButton *defaults = [NSButton buttonWithTitle:@"Restore defaults" target:form action:@selector(restoreDefaults:)];
     defaults.frame = NSMakeRect(346, 10, 148, 28); [view addSubview:defaults];
     [form apply:settings];
-    NSAlert *alert = [NSAlert new]; alert.messageText = @"Codex Update Helper settings";
+    NSAlert *alert = [NSAlert new]; alert.messageText = @"Codex Updater settings";
     if (appIcon) alert.icon = appIcon;
     alert.informativeText = @"Choose when updates happen and how Codex restarts. Changes apply on the next check.";
     alert.accessoryView = view;

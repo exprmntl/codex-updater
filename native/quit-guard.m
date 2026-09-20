@@ -120,7 +120,7 @@ int main(int argc, const char *argv[]) {
             NSDictionary *options = @{(__bridge NSString *)kAXTrustedCheckOptionPrompt: @YES};
             if (!AXIsProcessTrustedWithOptions((__bridge CFDictionaryRef)options)) {
                 [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"]];
-                puts("Enable Codex Update Helper in Privacy & Security > Accessibility.");
+                puts("Enable Codex Updater in Privacy & Security > Accessibility.");
                 return 2;
             }
             puts("Unattended quit is ready.");

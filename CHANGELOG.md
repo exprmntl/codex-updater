@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 - 2026-09-20
+
+- Rename the project, macOS app, and GitHub repository to Codex Updater (`exprmntl/codex-updater`).
+- Add `codex-updater` as the primary command, retaining `codex-update-helper` as a compatibility alias.
+- Preserve existing settings, logs, service and bundle identifiers, environment overrides, and the update lock. The installer backs up the old app after loading the renamed replacement.
+
 ## 0.2.0 - 2026-09-15
 
 - Limit automatic update application to 02:00–03:00 America/New_York, with quarter-hour retries and no daytime catch-up after sleep.

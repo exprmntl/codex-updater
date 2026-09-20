@@ -5,7 +5,7 @@ setopt PIPE_FAIL
 unsetopt BG_NICE
 
 readonly PROJECT_ROOT=${0:A:h:h}
-readonly HELPER="$PROJECT_ROOT/bin/codex-update-helper"
+readonly HELPER="$PROJECT_ROOT/bin/codex-updater"
 TEST_ROOT=$(/usr/bin/mktemp -d "${TMPDIR:-/tmp}/codex-update-helper-tests.XXXXXX")
 
 cleanup() {
@@ -58,12 +58,12 @@ run_helper() {
   "${CODEX_UPDATE_HELPER_TEST_HELPER:-$HELPER}" "$@"
 }
 
-/bin/echo "1..20"
+/bin/echo "1..22"
 
 /bin/zsh -n "$HELPER"
 /bin/echo "ok 1 - zsh syntax"
 
-[[ $("$HELPER" version) == 0.2.0 ]] || fail "unexpected version"
+[[ $("$HELPER" version) == 0.2.1 ]] || fail "unexpected version"
 /bin/echo "ok 2 - version"
 
 help_output=$("$HELPER" help)
@@ -165,12 +165,24 @@ done
 /bin/echo "ok 17 - Eastern time is independent of the Mac timezone and follows DST"
 
 CODEX_UPDATE_HELPER_BUILD_ROOT="$TEST_ROOT/build" /bin/zsh "$PROJECT_ROOT/scripts/build-app.sh" >"$TEST_ROOT/build.out" 2>&1
-"$TEST_ROOT/build/Codex Update Helper.app/Contents/MacOS/codex-update-helper-quit" --self-test
+"$TEST_ROOT/build/Codex Updater.app/Contents/MacOS/codex-update-helper-quit" --self-test
 /bin/echo "ok 18 - native warning policy protects active work, worktrees, unknown text, and other dialogs"
 
 # Mock only the OS interactions, exercising the actual update/reopen flow.
 /bin/zsh "$PROJECT_ROOT/tests/update-flow.sh" "$TEST_ROOT" "$HELPER"
 /bin/echo "ok 19 - successful update reopens; canceled quit, missing permission, and failed install stay safe"
 
-/bin/zsh "$PROJECT_ROOT/tests/settings.sh" "$TEST_ROOT" "$HELPER" "$TEST_ROOT/build/Codex Update Helper.app/Contents/MacOS/codex-update-helper-quit"
+/bin/zsh "$PROJECT_ROOT/tests/settings.sh" "$TEST_ROOT" "$HELPER" "$TEST_ROOT/build/Codex Updater.app/Contents/MacOS/codex-update-helper-quit"
 /bin/echo "ok 20 - persistent settings, validation, time boundaries, retries, policy, and reopen options"
+
+[[ $("$PROJECT_ROOT/bin/codex-update-helper" version) == $("$HELPER" version) ]] || fail "legacy command differs"
+assert_contains "$("$PROJECT_ROOT/bin/codex-update-helper" help)" "codex-updater run"
+/bin/zsh -c 'source "$1"; [[ $LOCK_DIR == "${TMPDIR:-/tmp}/codex-update-helper-${UID}.lock" ]]' test "$HELPER" || fail "update lock changed"
+/bin/echo "ok 21 - legacy command remains usable and shares the existing update lock"
+
+app="$TEST_ROOT/build/Codex Updater.app"
+[[ $(/usr/bin/plutil -extract CFBundleDisplayName raw "$app/Contents/Info.plist") == 'Codex Updater' ]] || fail "wrong display name"
+[[ $(/usr/bin/plutil -extract CFBundleIdentifier raw "$app/Contents/Info.plist") == dev.exprmntl.codex-update-helper.quit-guard ]] || fail "bundle identity changed"
+[[ $("$app/Contents/Resources/codex-updater" version) == 0.2.1 ]] || fail "new bundled command is missing"
+[[ $("$app/Contents/Resources/codex-update-helper" version) == 0.2.1 ]] || fail "legacy bundled command is missing"
+/bin/echo "ok 22 - renamed app bundles both commands and preserves its identity"
